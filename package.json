@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "bin": {
+    "gendiff": "dist/bin/gendiff.js"
+  },
   "files": [
     "dist"
   ],
@@ -19,5 +22,8 @@
     "@babel/node": "^7.6.2",
     "@babel/preset-env": "^7.6.2",
     "eslint": "^6.5.0"
+  },
+  "dependencies": {
+    "commander": "^3.0.2"
   }
 }

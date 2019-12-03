@@ -1,5 +1,8 @@
 import fs from 'fs';
 import _ from 'lodash';
+import parse from './parsers.js';
+import differ from './differ.js';
+import render from './render.js';
 
 const compare = (obj1, obj2) => {
 	const unitedObj = {...obj1, ...obj2};
@@ -19,10 +22,8 @@ const compare = (obj1, obj2) => {
 	}, '');
 };
 
-const differ = (filePath1, filePath2) => {
-	const file1 = JSON.parse(fs.readFileSync(`${filePath1}`, 'utf-8'));
-	const file2 = JSON.parse(fs.readFileSync(`${filePath2}`, 'utf-8'));
-	return compare(file1, file2);
+export default (file1, file2) => {
+	const parsedFile1 = parse(file1);
+	const parsedFile2 = parse(file2);
+	return render(differ(parsedFile1, parsedFile2));
 };
-
-export default differ;

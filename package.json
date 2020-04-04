@@ -1,8 +1,8 @@
 {
-  "name": "hexlet2",
+  "name": "gendiff_shohirev_lvl2",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/bin/index.js",
+  "main": "dist/bin/gendiff.js",
   "bin": {
     "gendiff": "dist/bin/gendiff.js"
   },
@@ -26,6 +26,8 @@
     "jest": "^24.9.0"
   },
   "dependencies": {
-    "commander": "^3.0.2"
+    "commander": "^3.0.2",
+    "ini": "^1.3.5",
+    "js-yaml": "^3.13.1"
   }
 }

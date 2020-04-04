@@ -1,35 +1,37 @@
+import _ from 'lodash';
+
 const getDiff = (obj1, obj2) => {
   const mergedObj = { ...obj1, ...obj2 };
 
-  const keys = Object.keys(mergedObj);
+  return Object.keys(mergedObj).sort().map((key) => {
+    const astNode = { key };
 
-  const resultData = keys.map((key) => {
-
-    const node = { name: key };
-
-    if (obj1[key] === undefined) {
-      node.type = 'added';
-    } else if (obj2[key] === undefined) {
-      node.type = 'removed';
-    } else if (obj1[key] === obj2[key]) {
-      node.type = 'common';
-    } else if ((typeof obj1[key] === 'object') && (typeof obj2[key] === 'object')) {
-      node.type = 'common';
-    } else {
-      node.type = 'changed';
-      node.previousValue = obj1[key];
+    astNode['type'] = 'common';
+    if (obj1[key] !== obj2[key]) {
+      astNode['type'] = 'changed';
+    }
+    if (typeof (obj1[key]) === 'object' && typeof (obj2[key]) === 'object') {
+      astNode['type'] = 'nestedObj';
+    }
+    if (!_.has(obj1, key)) {
+      astNode['type'] = 'added';
+    }
+    if (!_.has(obj2, key)) {
+      astNode['type'] = 'deleted';
     }
 
-    if ((typeof obj1[key] === 'object') && (typeof obj2[key] === 'object')) {
-      node.children = getDiff(obj1[key], obj2[key]);
-    } else {
-      node.value = mergedObj[key];
+    if (astNode['type'] === 'changed') {
+      astNode['previousValue'] = obj1[key];
     }
 
-    return node;
+    if (astNode['type'] === 'nestedObj') {
+      astNode['children'] = getDiff(obj1[key], obj2[key]);
+    } else {
+      astNode['value'] = mergedObj[key];
+    }
+
+    return astNode;
   });
-  
-  return resultData;
 };
 
 export default getDiff;

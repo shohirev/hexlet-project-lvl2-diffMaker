@@ -5,3 +5,35 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/a99a88d28ad37a79dbf6/maintainability)](https://codeclimate.com/github/codeclimate/codeclimate/maintainability)
 
 [![Test Coverage](https://api.codeclimate.com/v1/badges/a99a88d28ad37a79dbf6/test_coverage)](https://codeclimate.com/github/codeclimate/codeclimate/test_coverage)
+
+#  Second lvl practice project at Hexlet JavaScript Frontend course
+
+##  It releases the cli-utility representing the difference between two files of the same types.
+Available file types to compare:
+  - json
+  - yaml
+  - ini
+
+## Install
+>npm i gendiff_shohirev_lvl2
+
+### Help output
+> gendiff -h
+
+### Usage
+> gendiff [options] <firstFilePath> <secondFilePath>
+
+	options:
+	  -f, --format [default - tree format, plain, json]
+
+## Examples of usage
+
+[![asciicast](https://asciinema.org/a/fDOpENEeUAAxMaczGuecML6ej.svg)](https://asciinema.org/a/fDOpENEeUAAxMaczGuecML6ej)
+
+### plain format output
+
+[![asciicast](https://asciinema.org/a/l5ciww2HofS7cfIj42RmivGNX.svg)](https://asciinema.org/a/l5ciww2HofS7cfIj42RmivGNX)
+
+### JSON format output
+
+[![asciicast](https://asciinema.org/a/WBjQdWFHov6N175gwuoBrRQie.svg)](https://asciinema.org/a/WBjQdWFHov6N175gwuoBrRQie)

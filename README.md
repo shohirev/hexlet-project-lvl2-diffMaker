@@ -23,7 +23,7 @@ Available file types to compare:
 > gendiff -h
 
 ### Usage
-> gendiff [options] <firstFilePath> <secondFilePath>
+> gendiff [options firstFilePath secondFilePath]
 
 	options:
 	  -f, --format [default - tree format, plain, json]

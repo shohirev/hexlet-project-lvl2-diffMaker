@@ -1,4 +1,4 @@
-const renderJSON = (diff) => {
+const renderToObject = (diff) => {
   const prefixMap = {
     common: '  ',
     deleted: '- ',
@@ -6,10 +6,10 @@ const renderJSON = (diff) => {
     nestedObj: '  '
   };
 
-  const tree = diff.reduce((acc, currentNode) => {
+  const objectTree = diff.reduce((acc, currentNode) => {
     let nodeName = currentNode['key'];
     let nodeContent = currentNode.hasOwnProperty('children') ?
-                        renderJSON(currentNode['children']) :
+                        renderToObject(currentNode['children']) :
                           currentNode['value'];
     
     switch (currentNode['type']) {
@@ -23,7 +23,9 @@ const renderJSON = (diff) => {
     return acc;
   }, {});
 
-  return tree;
+  return objectTree;
 };
 
-export default (diff) => JSON.stringify(renderJSON(diff), null, 4);
+const renderToJSON = (diff) => JSON.stringify(renderToObject(diff));
+
+export default { renderToJSON };

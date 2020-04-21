@@ -28,4 +28,4 @@ const renderToObject = (diff) => {
 
 const renderToJSON = (diff) => JSON.stringify(renderToObject(diff));
 
-export default { renderToJSON };
+export default renderToJSON;

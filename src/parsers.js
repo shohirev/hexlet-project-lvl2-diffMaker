@@ -1,20 +1,18 @@
-import fs from 'fs';
-import path from 'path';
 import yaml from 'js-yaml';
 import ini from 'ini';
 
-const parser = (file) => {
-	switch (path.extname(`${file}`)) {
-		case '.json':
-		return JSON.parse(fs.readFileSync(`${file}`, 'utf-8'));
+const parse = (data, sourceFileType) => {
+	switch (sourceFileType) {
+		case 'json':
+		return JSON.parse(data);
 		break;
-		case '.yml':
-		return yaml.safeLoad(fs.readFileSync(`${file}`, 'utf-8'));
+		case 'yml':
+		return yaml.safeLoad(data);
 		break;
-		case '.ini':
-		return ini.parse(fs.readFileSync(`${file}`, 'utf-8'));
+		case 'ini':
+		return ini.parse(data);
 		break;
 	}
 };
 
-export default parser;
+export default parse;

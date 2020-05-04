@@ -1,40 +1,40 @@
-const renderToPlain = (diff, path = '') => {
-  const finalizeStr = (node) => {
-    let value = `'${node['value']}'`;
-    if (typeof (node['value']) === 'object' && node['value'] !== null) {
-      value = '[complex value]';
+import _ from 'lodash';
+
+const renderToPlain = (diff, currentNodePath = '') => {
+  const describe = (node) => {
+    const { nodeType } = node;
+    const valueDecription = _.isObject(node.nodeValue) ? '[complex value]' : node.nodeValue;
+
+    if (nodeType === 'changed') {
+      const previousValueDescription = _.isObject(node.previousValue) ? '[complex value]' : node.previousValue;
+      return `was changed from ${previousValueDescription} to ${valueDecription}`;
     }
 
-    let previousValue = `'${node['previousValue']}'`;
-    if (typeof (node['previousValue']) === 'object' && node['previousValue'] !== null) {
-      previousValue = '[complex value]';
+    if (nodeType === 'added') {
+      return `was added with value: ${valueDecription}`;
     }
 
-    if (node['type'] === 'added') {
-      return `was added with value: ${value}`;
-    }
-    if (node['type'] === 'deleted') {
+    if (nodeType === 'deleted') {
       return 'was deleted';
     }
-    return `was changed from ${previousValue} to ${value}`;
   };
 
-  const neededType = ['changed', 'added', 'deleted'];
+  const displayedTypes = ['changed', 'added', 'deleted'];
 
-  const result = diff.reduce((acc, node) => {
-    const nodeType = node['type'];
-    if (neededType.includes(nodeType)) {
-      acc += `\nProperty '${path.concat(`${node['key']}`)}' ${finalizeStr(node)}`;
+  const resultOutput = diff.reduce((acc, node) => {
+    const { nodeType } = node;
+    if (displayedTypes.includes(nodeType)) {
+      acc += `\nProperty '${currentNodePath}${node.key}' ${describe(node)}`;
       return acc;
     }
-    if (node['type'] === 'nestedObj') {
-      acc += `\n${renderToPlain(node['children'], path.concat(`${node['key']}.`))}`;
+    if (nodeType === 'nestedObj') {
+      acc += `\n${renderToPlain(node.children, `${currentNodePath}${node.key}.`)}`;
       return acc;
     }
     return acc;
-  }, '');
+  }, '').trim();
 
-  return result.slice(1);
+  return resultOutput;
 };
 
 export default renderToPlain;

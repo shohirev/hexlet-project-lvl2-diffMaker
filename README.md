@@ -29,8 +29,9 @@ Available file types to compare:
 	  -f, --format [default - tree format, plain, json]
 
 ## Examples of usage
+### default tree format output
 
-[![asciicast](https://asciinema.org/a/fDOpENEeUAAxMaczGuecML6ej.svg)](https://asciinema.org/a/fDOpENEeUAAxMaczGuecML6ej)
+[![asciicast](https://asciinema.org/a/6llMbxsn02lUYqQjJO6LOfkWE.svg)](https://asciinema.org/a/6llMbxsn02lUYqQjJO6LOfkWE)
 
 ### plain format output
 

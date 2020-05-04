@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 const renderToObject = (diff) => {
   const prefixMap = {
     common: '  ',
@@ -6,24 +8,22 @@ const renderToObject = (diff) => {
     nestedObj: '  '
   };
 
-  const objectTree = diff.reduce((acc, currentNode) => {
-    let nodeName = currentNode['key'];
-    let nodeContent = currentNode.hasOwnProperty('children') ?
-                        renderToObject(currentNode['children']) :
-                          currentNode['value'];
+  return diff.reduce((resultObjTree, node) => {
+    const { key } = node;
+    const { nodeType } = node;
     
-    switch (currentNode['type']) {
+    const nodeContent = _.has(node, 'children') ? renderToObject(node.children) : node.nodeValue;
+    
+    switch (node.nodeType) {
       case 'changed':
-        acc[`${prefixMap['deleted']}${nodeName}`] = nodeContent;
-        acc[`${prefixMap['added']}${nodeName}`] = currentNode['previousValue'];
+        resultObjTree[`${prefixMap['deleted']}${key}`] = node.previousValue;
+        resultObjTree[`${prefixMap['added']}${key}`] = nodeContent;
         break;
       default:
-        acc[`${prefixMap[currentNode['type']]}${nodeName}`] = nodeContent;
+        resultObjTree[`${prefixMap[nodeType]}${key}`] = nodeContent;
     }
-    return acc;
+    return resultObjTree;
   }, {});
-
-  return objectTree;
 };
 
 const renderToJSON = (diff) => JSON.stringify(renderToObject(diff));

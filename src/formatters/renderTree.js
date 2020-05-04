@@ -1,61 +1,80 @@
-export default (diff) => {
+import _ from 'lodash';
+
+const render = (diff) => {
   const stringify = (data) => {
-    if (typeof(data) === 'object' && data !== null) {
-      const processedProps = Object.keys(data).reduce((acc, key) => {
-        acc += `${key}: ${stringify(data[key])}`;
+    if (_.isObject(data)) {
+      const processedData = _.keys(data).reduce((acc, key) => {
+        acc += `${key}: ${stringify(data[key])}\n  `;
         return acc;
       }, '');
-      return `{\n  ${processedProps}\n}`;
+      return `{\n  ${processedData.trim()}\n}`;
     }
     return data;
   };
 
   const buildTree = (diff) => {
     const prefixMap = {
-      common: ' ',
-      deleted: '-',
-      added: '+'
+      common: '  ',
+      deleted: '- ',
+      added: '+ ',
+      nestedObj: '  ',
     };
 
     const tree = diff.reduce((acc, node) => {
-      const value = stringify(node['value']);
-      const previousValue = stringify(node['previousValue']);
+      const { nodeType } = node;
+      const nodeContent = _.has(node, 'nodeValue') ? node.nodeValue : node.children;
 
-      if (node['type'] === 'changed') {
-        acc += `\n${prefixMap['deleted']} ${node['key']}: ${previousValue}`;
-        acc += `\n${prefixMap['added']} ${node['key']}: ${value}`;
-      } else if (node['type'] === 'nestedObj') {
-        const key = `\n${prefixMap['common']} ${node['key']}`;
-        const children = buildTree(node['children']);
-        acc += `${key}: {${children}\n}`;
-      } else {
-        acc += `\n${prefixMap[node['type']]} ${node['key']}: ${value}`;
+      if (nodeType === 'added' || nodeType === 'deleted' || nodeType === 'common') {
+        const { key } = node;
+        const prefix = prefixMap[nodeType];
+        acc += `\n${prefix}${key}: ${stringify(nodeContent)}`;
+        return acc;
       }
 
-      return acc;
-    }, '');
+      if (nodeType === 'changed') {
+        const { key } = node;
+        const { previousValue } = node;
+        acc += `\n${prefixMap['deleted']}${key}: ${stringify(previousValue)}`;
+        acc += `\n${prefixMap['added']}${key}: ${stringify(nodeContent)}`;
+        return acc;
+      }
+
+      if (nodeType === 'nestedObj') {
+        const prefix = prefixMap[nodeType];
+        const { key } = node;
+        acc += `\n${prefix}${key}: {\n${buildTree(nodeContent)}\n}`;
+        return acc;
+      }
+    }, '').slice(1);
 
     return tree;
   };
 
-  const addIndent = (tree) => {
-  const splitted = tree.split('\n');
-  let indent = '';
-  for (let i = 1; i < splitted.length - 1; i += 1) {
-    const previousStr = splitted[i - 1];
-    const currentStr = splitted[i];
-    if (previousStr.endsWith('{')) {
-      indent = indent.concat('    ');
-    }
-    splitted[i] = `${indent}${currentStr}`;
-    if (currentStr.endsWith('}')) {
-      splitted[i] = `${indent.slice(2)}${currentStr}`;
-      indent = indent.slice(4);
-    }
-  }
-  return splitted.join('\n');
+  const normalize = (tree) => {
+    const splittedTree = tree.split('\n');
+    let indent = '  ';
+    const normalizedTree = splittedTree.map((currentLine, lineIndex) => {
+      let lineWithIndent;
+      if (currentLine.endsWith('{')) {
+        lineWithIndent = `${indent}${currentLine}`;
+        indent += '    ';
+        return lineWithIndent;
+      }
+      if (currentLine.endsWith('}')) {
+        indent = indent.slice(0, -2);
+        lineWithIndent = `${indent}${currentLine}`;
+        indent = indent.slice(0, -2);
+        return lineWithIndent;
+      }
+      lineWithIndent = `${indent}${currentLine}`;
+      return lineWithIndent;
+    }).join('\n');
+    
+    const wrappedTree = `{\n${normalizedTree}\n}`;
+    return wrappedTree;
+  };
+
+  return normalize(buildTree(diff));
 };
 
-  const result = addIndent(`{${buildTree(diff)}\n}`);
-  return result;
-};
+export default render;

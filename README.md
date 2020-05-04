@@ -35,8 +35,8 @@ Available file types to compare:
 
 ### plain format output
 
-[![asciicast](https://asciinema.org/a/l5ciww2HofS7cfIj42RmivGNX.svg)](https://asciinema.org/a/l5ciww2HofS7cfIj42RmivGNX)
+[![asciicast](https://asciinema.org/a/rxtTZI239tIELUYitKhJ9Uvoa.svg)](https://asciinema.org/a/rxtTZI239tIELUYitKhJ9Uvoa)
 
 ### JSON format output
 
-[![asciicast](https://asciinema.org/a/cKbeUWTUiqAGw4woMCgQ24O1H.svg)](https://asciinema.org/a/cKbeUWTUiqAGw4woMCgQ24O1H)
+[![asciicast](https://asciinema.org/a/FRmLUWWsVGn8HtBzofYlkMQxS.svg)](https://asciinema.org/a/FRmLUWWsVGn8HtBzofYlkMQxS)

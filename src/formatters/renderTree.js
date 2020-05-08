@@ -53,7 +53,7 @@ const render = (diff) => {
   const normalize = (tree) => {
     const splittedTree = tree.split('\n');
     let indent = '  ';
-    const normalizedTree = splittedTree.map((currentLine, lineIndex) => {
+    const normalizedTree = splittedTree.map((currentLine) => {
       let lineWithIndent;
       if (currentLine.endsWith('{')) {
         lineWithIndent = `${indent}${currentLine}`;

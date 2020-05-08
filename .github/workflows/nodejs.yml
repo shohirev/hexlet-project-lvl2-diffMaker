@@ -24,6 +24,6 @@ jobs:
     - run: npm ci
     - run: npm run build --if-present
     - run: npm test
-    - run: male lint
+    - run: make lint
       env:
         CI: true

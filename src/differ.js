@@ -1,7 +1,6 @@
 import _ from 'lodash';
 
 const buildDiff = (dataBefore, dataAfter) => {
-
   const mergedKeysList = _.union(_.keys(dataBefore), _.keys(dataAfter)).sort();
 
   const diff = mergedKeysList.map((key) => {
@@ -29,7 +28,7 @@ const buildDiff = (dataBefore, dataAfter) => {
         key,
         nodeType: 'nestedObj',
         children: buildDiff(valueBefore, valueAfter),
-      }
+      };
     }
 
     if (valueBefore === valueAfter) {
@@ -37,7 +36,7 @@ const buildDiff = (dataBefore, dataAfter) => {
         key,
         nodeType: 'common',
         nodeValue: valueBefore,
-      }
+      };
     }
 
     return {
@@ -45,7 +44,7 @@ const buildDiff = (dataBefore, dataAfter) => {
       nodeType: 'changed',
       nodeValue: valueAfter,
       previousValue: valueBefore,
-    }
+    };
   });
 
   return diff;

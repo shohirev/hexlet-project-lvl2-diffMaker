@@ -4,34 +4,39 @@ const renderToPlain = (diff, currentNodePath = '') => {
   const describe = (node) => {
     const { nodeType } = node;
     const valueDecription = _.isObject(node.nodeValue) ? '[complex value]' : node.nodeValue;
+    let nodeDescription;
 
     if (nodeType === 'changed') {
       const previousValueDescription = _.isObject(node.previousValue) ? '[complex value]' : node.previousValue;
-      return `was changed from ${previousValueDescription} to ${valueDecription}`;
+      nodeDescription = `was changed from ${previousValueDescription} to ${valueDecription}`;
     }
 
     if (nodeType === 'added') {
-      return `was added with value: ${valueDecription}`;
+      nodeDescription = `was added with value: ${valueDecription}`;
     }
 
     if (nodeType === 'deleted') {
-      return 'was deleted';
+      nodeDescription = 'was deleted';
     }
+
+    return nodeDescription;
   };
 
   const displayedTypes = ['changed', 'added', 'deleted'];
 
-  const resultOutput = diff.reduce((acc, node) => {
+  const resultOutput = diff.reduce((outputAcc, node) => {
     const { nodeType } = node;
-    if (displayedTypes.includes(nodeType)) {
-      acc += `\nProperty '${currentNodePath}${node.key}' ${describe(node)}`;
-      return acc;
+    let currentStepOutput = `${outputAcc}`;
+
+    if (_.includes(displayedTypes, nodeType)) {
+      currentStepOutput += `\nProperty '${currentNodePath}${node.key}' ${describe(node)}`;
+      return currentStepOutput;
     }
     if (nodeType === 'nestedObj') {
-      acc += `\n${renderToPlain(node.children, `${currentNodePath}${node.key}.`)}`;
-      return acc;
+      currentStepOutput += `\n${renderToPlain(node.children, `${currentNodePath}${node.key}.`)}`;
+      return currentStepOutput;
     }
-    return acc;
+    return currentStepOutput;
   }, '').trim();
 
   return resultOutput;

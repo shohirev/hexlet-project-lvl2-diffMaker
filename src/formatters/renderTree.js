@@ -4,15 +4,16 @@ const render = (diff) => {
   const stringify = (data) => {
     if (_.isObject(data)) {
       const processedData = _.keys(data).reduce((acc, key) => {
-        acc += `${key}: ${stringify(data[key])}\n  `;
-        return acc;
+        let currentAcc = `${acc}`;
+        currentAcc += `${key}: ${stringify(data[key])}\n  `;
+        return currentAcc;
       }, '');
       return `{\n  ${processedData.trim()}\n}`;
     }
     return data;
   };
 
-  const buildTree = (diff) => {
+  const buildTree = (diffAST) => {
     const prefixMap = {
       common: '  ',
       deleted: '- ',
@@ -20,31 +21,31 @@ const render = (diff) => {
       nestedObj: '  ',
     };
 
-    const tree = diff.reduce((acc, node) => {
+    const tree = diffAST.reduce((accTree, node) => {
       const { nodeType } = node;
       const nodeContent = _.has(node, 'nodeValue') ? node.nodeValue : node.children;
+      let currentAccTree = `${accTree}`;
 
       if (nodeType === 'added' || nodeType === 'deleted' || nodeType === 'common') {
         const { key } = node;
         const prefix = prefixMap[nodeType];
-        acc += `\n${prefix}${key}: ${stringify(nodeContent)}`;
-        return acc;
+        currentAccTree += `\n${prefix}${key}: ${stringify(nodeContent)}`;
       }
 
       if (nodeType === 'changed') {
         const { key } = node;
         const { previousValue } = node;
-        acc += `\n${prefixMap['deleted']}${key}: ${stringify(previousValue)}`;
-        acc += `\n${prefixMap['added']}${key}: ${stringify(nodeContent)}`;
-        return acc;
+        currentAccTree += `\n${prefixMap.deleted}${key}: ${stringify(previousValue)}`;
+        currentAccTree += `\n${prefixMap.added}${key}: ${stringify(nodeContent)}`;
       }
 
       if (nodeType === 'nestedObj') {
         const prefix = prefixMap[nodeType];
         const { key } = node;
-        acc += `\n${prefix}${key}: {\n${buildTree(nodeContent)}\n}`;
-        return acc;
+        currentAccTree += `\n${prefix}${key}: {\n${buildTree(nodeContent)}\n}`;
       }
+
+      return currentAccTree;
     }, '').slice(1);
 
     return tree;
@@ -69,7 +70,7 @@ const render = (diff) => {
       lineWithIndent = `${indent}${currentLine}`;
       return lineWithIndent;
     }).join('\n');
-    
+
     const wrappedTree = `{\n${normalizedTree}\n}`;
     return wrappedTree;
   };

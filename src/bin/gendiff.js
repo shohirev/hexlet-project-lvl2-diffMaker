@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import compare from '..';
 import program from 'commander';
+import compare from '..';
 
 program
   .version('0.0.1')

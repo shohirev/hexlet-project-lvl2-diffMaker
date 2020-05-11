@@ -7,9 +7,9 @@ const dataTypes = ['json', 'yml', 'ini'];
 const buildPath = (fileName) => path.join(__dirname, '__fixtures__', fileName);
 
 const readFixture = (fixtureName) => {
-	const fixturePath = buildPath(fixtureName);
-	const fixtureContent = fs.readFileSync(fixturePath, 'utf-8').trim();
-	return fixtureContent;
+  const fixturePath = buildPath(fixtureName);
+  const fixtureContent = fs.readFileSync(fixturePath, 'utf-8').trim();
+  return fixtureContent;
 };
 
 test.each(dataTypes)('testing another data type', (dataType) => {

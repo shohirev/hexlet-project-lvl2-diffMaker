@@ -1,22 +1,22 @@
 import _ from 'lodash';
 
 const buildDiff = (dataBefore, dataAfter) => {
-  const mergedKeysList = _.union(_.keys(dataBefore), _.keys(dataAfter)).sort();
+  const keys = _.union(_.keys(dataBefore), _.keys(dataAfter)).sort();
 
-  const diff = mergedKeysList.map((key) => {
+  const diff = keys.map((key) => {
     if (!_.has(dataBefore, key)) {
       return {
         key,
-        nodeType: 'added',
-        nodeValue: dataAfter[key],
+        type: 'added',
+        value: dataAfter[key],
       };
     }
 
     if (!_.has(dataAfter, key)) {
       return {
         key,
-        nodeType: 'deleted',
-        nodeValue: dataBefore[key],
+        type: 'deleted',
+        value: dataBefore[key],
       };
     }
 
@@ -26,7 +26,7 @@ const buildDiff = (dataBefore, dataAfter) => {
     if (_.isObject(valueBefore) && _.isObject(valueAfter)) {
       return {
         key,
-        nodeType: 'nestedObj',
+        type: 'nestedNode',
         children: buildDiff(valueBefore, valueAfter),
       };
     }
@@ -34,15 +34,15 @@ const buildDiff = (dataBefore, dataAfter) => {
     if (valueBefore === valueAfter) {
       return {
         key,
-        nodeType: 'common',
-        nodeValue: valueBefore,
+        type: 'common',
+        value: valueBefore,
       };
     }
 
     return {
       key,
-      nodeType: 'changed',
-      nodeValue: valueAfter,
+      type: 'changed',
+      value: valueAfter,
       previousValue: valueBefore,
     };
   });

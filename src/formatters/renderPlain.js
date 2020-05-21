@@ -1,43 +1,47 @@
 import _ from 'lodash';
 
+const describe = (node) => {
+  const { type } = node;
+  const valueDescription = _.isObject(node.value) ? '[complex value]' : node.value;
+  let nodeDescription;
+
+  if (type === 'changed') {
+    const previousValueDescription = _.isObject(node.previousValue) ? '[complex value]' : node.previousValue;
+    nodeDescription = `was changed from ${previousValueDescription} to ${valueDescription}`;
+  }
+
+  if (type === 'added') {
+    nodeDescription = `was added with value: ${valueDescription}`;
+  }
+
+  if (type === 'deleted') {
+    nodeDescription = 'was deleted';
+  }
+
+  return nodeDescription;
+};
+
 const renderToPlain = (diff, currentNodePath = '') => {
-  const describe = (node) => {
-    const { nodeType } = node;
-    const valueDecription = _.isObject(node.nodeValue) ? '[complex value]' : node.nodeValue;
-    let nodeDescription;
-
-    if (nodeType === 'changed') {
-      const previousValueDescription = _.isObject(node.previousValue) ? '[complex value]' : node.previousValue;
-      nodeDescription = `was changed from ${previousValueDescription} to ${valueDecription}`;
-    }
-
-    if (nodeType === 'added') {
-      nodeDescription = `was added with value: ${valueDecription}`;
-    }
-
-    if (nodeType === 'deleted') {
-      nodeDescription = 'was deleted';
-    }
-
-    return nodeDescription;
-  };
-
   const displayedTypes = ['changed', 'added', 'deleted'];
 
   const resultOutput = diff.reduce((outputAcc, node) => {
-    const { nodeType } = node;
-    let currentStepOutput = `${outputAcc}`;
+    const { key } = node;
+    const description = describe(node);
 
-    if (_.includes(displayedTypes, nodeType)) {
-      currentStepOutput += `\nProperty '${currentNodePath}${node.key}' ${describe(node)}`;
-      return currentStepOutput;
+    if (_.includes(displayedTypes, node.type)) {
+      outputAcc.push(`Property '${currentNodePath}${key}' ${description}`);
+      return outputAcc;
     }
-    if (nodeType === 'nestedObj') {
-      currentStepOutput += `\n${renderToPlain(node.children, `${currentNodePath}${node.key}.`)}`;
-      return currentStepOutput;
+
+    if (node.type === 'nestedNode') {
+      const { children } = node;
+      const childrenNodePath = `${currentNodePath}${key}.`;
+      outputAcc.push(renderToPlain(children, childrenNodePath));
+      return outputAcc;
     }
-    return currentStepOutput;
-  }, '').trim();
+
+    return outputAcc;
+  }, []).join('\n');
 
   return resultOutput;
 };

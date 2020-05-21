@@ -5,26 +5,28 @@ const renderToObject = (diff) => {
     common: '  ',
     deleted: '- ',
     added: '+ ',
-    nestedObj: '  ',
+    nestedNode: '  ',
   };
 
   const resultObjTree = diff.reduce((tree, node) => {
-    const { key } = node;
-    const { nodeType } = node;
-    const nodeContent = _.has(node, 'children') ? renderToObject(node.children) : node.nodeValue;
-    const processedObjTree = { ...tree };
+    const { key, type } = node;
+    const nodeContent = _.has(node, 'children') ? renderToObject(node.children) : node.value;
 
-    if (node.nodeType === 'changed') {
+    if (type === 'changed') {
       const keyDeletedValue = `${prefixMap.deleted}${key}`;
       const keyAddedValue = `${prefixMap.added}${key}`;
-      processedObjTree[keyDeletedValue] = node.previousValue;
-      processedObjTree[keyAddedValue] = nodeContent;
-    } else {
-      const includedKey = `${prefixMap[nodeType]}${key}`;
-      processedObjTree[includedKey] = nodeContent;
+      return {
+        ...tree,
+        [keyDeletedValue]: node.previousValue,
+        [keyAddedValue]: nodeContent,
+      };
     }
 
-    return processedObjTree;
+    const includedKey = `${prefixMap[type]}${key}`;
+    return {
+      ...tree,
+      [includedKey]: nodeContent,
+    };
   }, {});
 
   return resultObjTree;

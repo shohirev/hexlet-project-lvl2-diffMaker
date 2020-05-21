@@ -1,23 +1,21 @@
 import fs from 'fs';
 import path from 'path';
+
 import parse from './parsers.js';
 import buildDiff from './differ.js';
 import render from './formatters/index.js';
 
-export default (fileBeforePath, fileAfterPath, outputFormat = 'tree') => {
-  const fileBeforeContent = fs.readFileSync(fileBeforePath, 'utf-8');
+export default (beforeFilePath, afterFilePath, outputFormat = 'tree') => {
+  const beforeContent = fs.readFileSync(beforeFilePath, 'utf-8');
+  const afterContent = fs.readFileSync(afterFilePath, 'utf-8');
+  const comparedFileType = path.extname(`${beforeFilePath}`).slice(1);
 
-  const fileAfterContent = fs.readFileSync(fileAfterPath, 'utf-8');
+  const before = parse(beforeContent, comparedFileType);
+  const after = parse(afterContent, comparedFileType);
 
-  const comparedFileType = path.extname(`${fileBeforePath}`).slice(1);
+  const diff = buildDiff(before, after);
 
-  const dataBefore = parse(fileBeforeContent, comparedFileType);
-
-  const dataAfter = parse(fileAfterContent, comparedFileType);
-
-  const differ = buildDiff(dataBefore, dataAfter);
-
-  const resultOutput = render(differ, outputFormat);
+  const resultOutput = render(diff, outputFormat);
 
   return resultOutput;
 };

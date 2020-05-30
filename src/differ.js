@@ -42,7 +42,7 @@ const buildDiff = (dataBefore, dataAfter) => {
     return {
       key,
       type: 'changed',
-      value: valueAfter,
+      currentValue: valueAfter,
       previousValue: valueBefore,
     };
   });

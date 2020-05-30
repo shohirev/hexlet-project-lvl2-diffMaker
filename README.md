@@ -39,4 +39,4 @@ Available file types to compare:
 
 ### JSON format output
 
-[![asciicast](https://asciinema.org/a/FRmLUWWsVGn8HtBzofYlkMQxS.svg)](https://asciinema.org/a/FRmLUWWsVGn8HtBzofYlkMQxS)
+[![asciicast](https://asciinema.org/a/xhWILr0lev3AVk4biFJ0qFBV9.svg)](https://asciinema.org/a/xhWILr0lev3AVk4biFJ0qFBV9)

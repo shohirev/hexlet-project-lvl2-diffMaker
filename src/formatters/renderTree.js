@@ -8,53 +8,41 @@ const stringify = (data, initIndent) => {
   const keys = _.keys(data);
   const internalIndent = `${initIndent}    `;
 
-  const processedData = keys.reduce((acc, key) => {
-    const value = stringify(data[key], internalIndent);
-    acc.push(`${internalIndent}${key}: ${value}`);
-    return acc;
-  }, []).join('\n');
+  const processedData = keys.map((key) => {
+    const valueByKey = stringify(data[key], internalIndent);
+    return `${internalIndent}${key}: ${valueByKey}`;
+  }).join('\n');
 
   return `{\n${processedData}\n${initIndent}}`;
 };
 
-const renderTree = (diffAST, startIndent = '') => {
+const renderTree = (diff, startIndent = '') => {
   const indent = `${startIndent}    `;
 
-  const tree = diffAST.reduce((accTree, node) => {
-    const { type } = node;
-    const nodeContent = _.has(node, 'value') ? stringify(node.value, indent) : node.children;
+  const outputTree = diff.map((node) => {
+    const { type, key } = node;
 
-    if (type === 'added') {
-      const { key } = node;
-      accTree.push(`${indent.slice(2)}+ ${key}: ${nodeContent}`);
+    switch (type) {
+      case 'added':
+        return `${indent.slice(2)}+ ${key}: ${stringify(node.value, indent)}`;
+      case 'deleted':
+        return `${indent.slice(2)}- ${key}: ${stringify(node.value, indent)}`;
+      case 'common':
+        return `${indent}${key}: ${stringify(node.value, indent)}`;
+      case 'changed': {
+        const { currentValue, previousValue } = node;
+        const beforeDescription = `${indent.slice(2)}- ${key}: ${stringify(previousValue, indent)}`;
+        const afterDescription = `${indent.slice(2)}+ ${key}: ${stringify(currentValue, indent)}`;
+        return `${beforeDescription}\n${afterDescription}`;
+      }
+      case 'nestedNode':
+        return `${indent}${key}: ${renderTree(node.children, indent)}`;
+      default:
+        throw new Error('Unacceptable node type!');
     }
+  }).join('\n');
 
-    if (type === 'deleted') {
-      const { key } = node;
-      accTree.push(`${indent.slice(2)}- ${key}: ${nodeContent}`);
-    }
-
-    if (type === 'common') {
-      const { key } = node;
-      accTree.push(`${indent}${key}: ${nodeContent}`);
-    }
-
-    if (type === 'changed') {
-      const { key } = node;
-      const { previousValue } = node;
-      accTree.push(`${indent.slice(2)}- ${key}: ${stringify(previousValue, indent)}`);
-      accTree.push(`${indent.slice(2)}+ ${key}: ${nodeContent}`);
-    }
-
-    if (type === 'nestedNode') {
-      const { key } = node;
-      accTree.push(`${indent}${key}: ${renderTree(nodeContent, indent)}`);
-    }
-
-    return accTree;
-  }, []).join('\n');
-
-  return `{\n${tree}\n${startIndent}}`;
+  return `{\n${outputTree}\n${startIndent}}`;
 };
 
 export default renderTree;

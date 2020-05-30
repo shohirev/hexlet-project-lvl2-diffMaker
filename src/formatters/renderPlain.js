@@ -1,49 +1,37 @@
 import _ from 'lodash';
 
-const describe = (node) => {
-  const { type } = node;
-  const valueDescription = _.isObject(node.value) ? '[complex value]' : node.value;
-  let nodeDescription;
-
-  if (type === 'changed') {
-    const previousValueDescription = _.isObject(node.previousValue) ? '[complex value]' : node.previousValue;
-    nodeDescription = `was changed from ${previousValueDescription} to ${valueDescription}`;
-  }
-
-  if (type === 'added') {
-    nodeDescription = `was added with value: ${valueDescription}`;
-  }
-
-  if (type === 'deleted') {
-    nodeDescription = 'was deleted';
-  }
-
-  return nodeDescription;
+const getDescription = (nodeValue) => {
+  const valueDescription = _.isObject(nodeValue) ? '[complex value]' : nodeValue;
+  return valueDescription;
 };
 
 const renderToPlain = (diff, currentNodePath = '') => {
-  const displayedTypes = ['changed', 'added', 'deleted'];
-
-  const resultOutput = diff.reduce((outputAcc, node) => {
+  const output = diff.map((node) => {
     const { key } = node;
-    const description = describe(node);
+    const { type } = node;
 
-    if (_.includes(displayedTypes, node.type)) {
-      outputAcc.push(`Property '${currentNodePath}${key}' ${description}`);
-      return outputAcc;
+    switch (type) {
+      case 'changed': {
+        const previousValueDescription = getDescription(node.previousValue);
+        const currentValueDescription = getDescription(node.currentValue);
+        return `Property '${currentNodePath}${key}' was changed from ${previousValueDescription} to ${currentValueDescription}`;
+      }
+      case 'added':
+        return `Property '${currentNodePath}${key}' was added with value: ${getDescription(node.value)}`;
+      case 'deleted':
+        return `Property '${currentNodePath}${key}' was deleted`;
+      case 'nestedNode': {
+        const nodeChildrenPath = `${currentNodePath}${key}.`;
+        return renderToPlain(node.children, nodeChildrenPath);
+      }
+      default:
+        return '';
     }
+  })
+    .filter((outputLine) => outputLine.length > 0)
+    .join('\n');
 
-    if (node.type === 'nestedNode') {
-      const { children } = node;
-      const childrenNodePath = `${currentNodePath}${key}.`;
-      outputAcc.push(renderToPlain(children, childrenNodePath));
-      return outputAcc;
-    }
-
-    return outputAcc;
-  }, []).join('\n');
-
-  return resultOutput;
+  return output;
 };
 
 export default renderToPlain;

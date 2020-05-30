@@ -2,21 +2,16 @@ import yaml from 'js-yaml';
 import ini from 'ini';
 
 const parse = (data, dataType) => {
-  let parsedData;
-
-  if (dataType === 'json') {
-    parsedData = JSON.parse(data);
+  switch (dataType) {
+    case 'json':
+      return JSON.parse(data);
+    case 'yml':
+      return yaml.safeLoad(data);
+    case 'ini':
+      return ini.parse(data);
+    default:
+      throw new Error(`${dataType} is unknown data type!`);
   }
-
-  if (dataType === 'yml') {
-    parsedData = yaml.safeLoad(data);
-  }
-
-  if (dataType === 'ini') {
-    parsedData = ini.parse(data);
-  }
-
-  return parsedData;
 };
 
 export default parse;

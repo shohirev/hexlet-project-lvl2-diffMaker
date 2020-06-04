@@ -10,7 +10,7 @@
 
 #  Second lvl practice project at Hexlet JavaScript Frontend course
 
-##  It releases the cli-utility representing the difference between two files of the same types.
+##  It releases the cli-utility representing the difference between two files of the same types
 Available file types to compare:
   - json
   - yaml

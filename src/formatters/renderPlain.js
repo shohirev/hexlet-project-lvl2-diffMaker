@@ -24,8 +24,10 @@ const renderToPlain = (diff, currentNodePath = '') => {
         const nodeChildrenPath = `${currentNodePath}${key}.`;
         return renderToPlain(node.children, nodeChildrenPath);
       }
-      default:
+      case 'common':
         return '';
+      default:
+        throw new Error(`Error! ${type} is invalid node type!`);
     }
   })
     .filter((outputLine) => outputLine.length > 0)

@@ -38,7 +38,7 @@ const renderTree = (diff, startIndent = '') => {
       case 'nestedNode':
         return `${indent}${key}: ${renderTree(node.children, indent)}`;
       default:
-        throw new Error('Unacceptable node type!');
+        throw new Error(`Error! ${type} is invalid node type!`);
     }
   }).join('\n');
 
